@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # --------------------------------------------------
-# Name    : Multiplication game
+# Name    : Multiplications game
 # Version : 3.0.0
 # Python  : 3.8.0
 # License : MIT
 # Author  : Gerard Bajona
-# Created : 2019/02/08
-# Changed : 2025/06/01
+# Created : 2025/06/01
+# Changed : 2025/06/08
 # URL     : http://github.com/gerardbm/lambdahub
 # --------------------------------------------------
-"""Multiplication game for the command line."""
+"""Multiplications game for the command line."""
 
 import argparse
 import random
@@ -21,7 +21,7 @@ from pathlib import Path
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-            description="Multiplication game for the command line")
+            description="Multiplications game for the command line.")
     parser.add_argument('-a',
             type=positive_digit,
             default=1,
@@ -39,13 +39,13 @@ def parse_arguments():
             help="Number of rounds to play (default = 10)")
     parser.add_argument('-s',
             action='store_true',
-            help="Save the stats if all answers are correct")
+            help="Save the scores if all answers are correct")
     parser.add_argument('-l',
             action='store_true',
-            help="Show a list with the statistics and exit")
+            help="Show a list with the previous scores and exit")
     parser.add_argument('-c',
             action='store_true',
-            help="Clear the saved statistics and exit")
+            help="Clear the previous saved scores and exit")
     return parser.parse_args()
 
 def positive_digit(digit):
@@ -91,8 +91,6 @@ def letsplay(digits_a, digits_b, rounds, save):
 
 def generate_operand(digits):
     """Generate a random number with a given number of digits."""
-    if digits <= 0:
-        raise ValueError("Digits must be 1 or more.")
     min_val = 10 ** (digits - 1)
     max_val = (10 ** digits) - 1
     return random.randint(min_val, max_val)
@@ -149,42 +147,42 @@ def colorize(percent):
 
 def savetocsv(interval, rounds, level):
     """Save the result in a CSV file"""
-    stats = Path.home() / '.multistats'
+    scores = Path.home() / '.multiplications_scores.csv'
     now = str(datetime.datetime.now().strftime("%Y/%m/%d %H:%M"))
     lvl = f"{level} digits"
     rnd = f"{rounds} rounds"
     sec = f"{round(interval, 2):.2f} sec"
     rpq = f"{round(interval/rounds, 2):.2f} sec/round"
     reg = f"{now}, {lvl}, {rnd}, {sec}, {rpq}\n"
-    with open(stats, 'a+', encoding='utf8') as file_handle:
+    with open(scores, 'a+', encoding='utf8') as file_handle:
         file_handle.write(reg)
 
-def show_stats():
-    """Show saved statistics from file."""
-    stats = Path.home() / '.multistats'
-    if stats.exists():
-        print("\nPrevious scores:")
-        print("----------------")
-        with open(stats, 'r', encoding='utf8') as file:
+def show_scores():
+    """Show saved scores from file."""
+    scores = Path.home() / '.multiplications_scores.csv'
+    if scores.exists():
+        print("\nMultiplications scores:")
+        print("-----------------------")
+        with open(scores, 'r', encoding='utf8') as file:
             print(file.read(), end='')
     else:
-        print("No stats recorded yet.")
+        print("No scores recorded yet.")
 
 def main():
     """Main program."""
     args = parse_arguments()
 
     if args.l:
-        show_stats()
+        show_scores()
         return
 
     if args.c:
-        stats = Path.home() / '.multistats'
-        if stats.exists():
-            stats.unlink()
-            print("Stats file deleted.")
+        scores = Path.home() / '.multiplications_scores.csv'
+        if scores.exists():
+            scores.unlink()
+            print("Scores file deleted.")
         else:
-            print("No stats file found to delete.")
+            print("No scores file found to delete.")
         return
 
     letsplay(args.a, args.b, args.r, args.s)
